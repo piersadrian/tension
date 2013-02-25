@@ -1,5 +1,5 @@
 module Tension
-  class Application
+  class Environment
 
     class << self
 
@@ -11,7 +11,7 @@ module Tension
       #
       #   Rails.application.config.tension_modules = %W( blog account )
       #
-      # Tension::Application will then search for all javascripts and stylesheets
+      # Tension::Environment will then search for all javascripts and stylesheets
       # one filesystem level deep in those scopes. The search paths become:
       #
       #   app/assets/{javascripts,stylesheets}/*.{js,css}
