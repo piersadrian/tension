@@ -10,24 +10,22 @@ included in views and templates.
 _Tension_ helps you out. It takes Rails's existing controller/view file structure
 and applies it to JavaScript and CSS assets as well. Let's take a sample Rails app:
 
-'''
-app
-+ assets
-+ controllers
-  + account
-  + api
-  + blog
-    + posts_controller.rb
-+ models
-+ views
-  + account
-  + api
-  + blog
-    + posts
-      + index.html.erb
-  + layouts
-    + blog.html.erb
-'''
+    app
+    + assets
+    + controllers
+      + account
+      + api
+      + blog
+        + posts_controller.rb
+    + models
+    + views
+      + account
+      + api
+      + blog
+        + posts
+          + index.html.erb
+      + layouts
+        + blog.html.erb
 
 The standard structure Rails enforces is __module__ &rarr; __controller__ &rarr;
 __action__. For the PostsController, the __action__ logic is tucked away alongside
