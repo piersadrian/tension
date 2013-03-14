@@ -1,5 +1,5 @@
-module Pipeline
-  class Builder
+module Tension
+  class Tagger
 
     GLOBAL_ASSET_NAME = "application".freeze
     SHARED_SUFFIX     = "_common".freeze

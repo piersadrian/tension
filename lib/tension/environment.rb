@@ -4,25 +4,26 @@ module Tension
     class << self
 
       # This method collects all asset paths for the asset pipeline to
-      # precompile. It's called from `config/application.rb` when determining
-      # which additional assets to include in the pipeline's precompilation
-      # process. Tension will assume that any subdirectories in your assets
-      # directory are module scopes. You can also explicitly set module scopes:
+      # precompile. It determines which additional assets to include in the
+      # pipeline's precompilation process. You can set your module scopes:
       #
       #   Rails.application.config.tension_modules = %W( blog account )
       #
-      # Tension::Environment will then search for all javascripts and stylesheets
-      # one filesystem level deep in those scopes. The search paths become:
+      # Environment will then search for all javascripts and stylesheets
+      # within those scopes. The search paths become:
       #
       #   app/assets/{javascripts,stylesheets}/*.{js,css}
       #   app/assets/{javascripts,stylesheets}/{blog,account}/**/*.{js,css}
       # 
-      # Any assets in these paths will be added to the pipeline and compiled.
+      # Any assets at these paths will be added to the pipeline and compiled.
 
       def collect_assets
-        assets = %W(stylesheets javascripts).map do |type|
-          glob_within_asset_path( type ) + module_scopes.map do |scope|
-            glob_within_asset_path( type, scope )
+        assets = Array.new
+
+        %W(stylesheets javascripts).map do |type|
+          assets += glob_within_asset_path( type )
+          assets += module_scopes.map do |scope_path|
+            glob_within_asset_path( type, scope_path )
           end
         end
 
@@ -33,7 +34,7 @@ module Tension
       private
 
       def module_scopes
-        # find dirs in app/assets
+        Rails.application.config.try(:tension_modules)
       end
 
       # Loads the file paths within a given subdirectory of "app/assets/".
@@ -43,9 +44,11 @@ module Tension
         # of a `type` have assets that matter.
         path_parts << "**" if path_parts.present?
 
+        # Build the filename pattern used to search for files.
         root_path = File.join(Rails.root, "app", "assets", type)
         pattern   = File.expand_path( File.join(*path_parts, "*.*"), root_path )
 
+        # Glob for any valid files under the filename pattern.
         paths = Dir.glob( pattern ).map do |file_path|
           # Remove extra, pre-compilation file extensions and any part of the
           # filepath at or above the asset `type`.
