@@ -7,7 +7,7 @@ module Tension
     initializer "tension.asset_pipeline" do |app|
       ActiveSupport.on_load :rails do
         if !Rails.env.development? && !Rails.env.test?
-          Rails.application.config.assets.precompile += Tension::Environment.collect_assets
+          Rails.application.config.assets.precompile += Tension::Environment.asset_paths
         end
       end
     end
