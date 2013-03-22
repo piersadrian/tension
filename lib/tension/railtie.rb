@@ -4,11 +4,16 @@ module Tension
   require "rails"
 
   class Railtie < Rails::Railtie
-    initializer "tension.asset_pipeline" do |app|
-      ActiveSupport.on_load :rails do
+    initializer "tension.add_assets_to_precompile_list" do |app|
+      ActiveSupport.on_load :after_initialize do
 
-        if !Rails.env.development? && !Rails.env.test?
-          Rails.application.config.assets.precompile += Tension::Environment.asset_paths
+        Rails.application.reload_routes!
+        Tension.load_assets!
+
+        ApplicationHelper.send(:include, Tension::TensionHelper)
+
+        Rails.application.config.assets.precompile << lambda do |path, filename|
+          Tension::Environment.asset_paths.include?( filename )
         end
 
       end
