@@ -6,7 +6,7 @@ module Tension
     extend ActiveSupport::Concern
 
     # Just call 
-    def asset_for type, request = request
+    def asset_for type, *args
       asset = Tension::Environment.asset_map
                                   .fetch( request.params[:controller] )
                                   .fetch( request.params[:action] )
@@ -19,7 +19,7 @@ module Tension
         :stylesheet_link_tag
       end
 
-      send( include_method, asset.logical_path )
+      send( include_method, asset.logical_path, *args )
     end
   end
 

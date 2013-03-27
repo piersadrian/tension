@@ -3,6 +3,7 @@ Gem::Specification.new do |s|
 
   s.version = "0.9"
   s.date    = "2013-03-21"
+  s.license = "MIT"
 
   s.summary     = "Tighten up Rails's asset pipeline for CSS & JS."
   s.description = "Tension brings some sanity to Rails's CSS & JS organization for modern front–end development."
