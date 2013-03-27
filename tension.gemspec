@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = "tension"
 
-  s.version = "0.9"
+  s.version = "0.9.1"
   s.date    = "2013-03-21"
   s.license = "MIT"
 
