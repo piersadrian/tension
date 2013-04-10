@@ -1,8 +1,11 @@
+$LOAD_PATH.push File.expand_path("../lib", __FILE__)
+require 'tension/version'
+
 Gem::Specification.new do |s|
   s.name = "tension"
 
-  s.version = "0.9.1"
-  s.date    = "2013-03-21"
+  s.version = Tension::VERSION
+  s.date    = "2013-04-10"
   s.license = "MIT"
 
   s.summary     = "Tighten up Rails's asset pipeline for CSS & JS."
