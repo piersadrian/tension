@@ -7,12 +7,11 @@ module Tension
   module TensionHelper
     extend ActiveSupport::Concern
 
-    # Just call 
     def asset_for type, *args
-      asset = Tension::Environment.asset_map
-                                  .fetch( request.params[:controller] )
-                                  .fetch( request.params[:action] )
-                                  .fetch( type.to_s )
+      controller = request.params[:controller]
+      action     = request.params[:action]
+
+      asset = Tension::Environment.asset_map[ controller ][ action ][ type.to_s ]
 
       include_method = case type
       when :js
@@ -21,7 +20,7 @@ module Tension
         :stylesheet_link_tag
       end
 
-      send( include_method, asset.logical_path, *args )
+      send( include_method, asset.logical_path, *args ) unless asset.nil?
     end
   end
 

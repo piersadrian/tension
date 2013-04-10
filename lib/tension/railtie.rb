@@ -8,7 +8,7 @@ module Tension
       ActiveSupport.on_load :after_initialize do
 
         Rails.application.reload_routes!
-        Tension.load_assets!
+        Tension.load_assets! unless Rails.env.development? or Rails.env.test?
 
         ActionView::Base.send(:include, Tension::TensionHelper)
 

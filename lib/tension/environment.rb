@@ -49,9 +49,11 @@ module Tension
       #   }
       #
       def asset_map
-        if @asset_map.nil?
-          @asset_map = Hash.new
-          globals    = Hash.new
+        @asset_map = nil if Rails.env.development?
+
+        @asset_map ||= begin
+          map      = Hash.new
+          globals  = Hash.new
 
           ASSET_TYPES.each do |type|
             # Find and store the global asset for this type.
@@ -61,9 +63,7 @@ module Tension
 
           # TODO: add support for looking up the tree...
           search_paths.each_pair do |controller_path, actions|
-            next unless local_controller?( controller_path )
-
-            @asset_map.store( controller_path, Hash.new )
+            map.store( controller_path, Hash.new )
 
             ASSET_TYPES.each do |type|
               # Attempt to locate a common asset for this controller.
@@ -71,22 +71,21 @@ module Tension
               common_asset = valid_asset( common_path ) || globals.fetch( type[:extension] )
 
               actions.each do |action|
-                if @asset_map[ controller_path ][ action ].nil?
-                  @asset_map.fetch( controller_path )
-                            .store( action, Hash.new )
+                unless map[ controller_path ].has_key?( action )
+                  map.fetch( controller_path ).store( action, Hash.new )
                 end
 
                 action_asset = valid_asset( "#{ [ controller_path, action ].join("/") }.#{ type[:extension] }" )
-                @asset_map.fetch( controller_path )
-                          .fetch( action )
-                          .store( type[:extension], action_asset || common_asset )
+                map.fetch( controller_path )
+                   .fetch( action )
+                   .store( type[:extension], action_asset || common_asset )
               end
             end
 
           end
-        end
 
-        @asset_map
+          map
+        end
       end
 
       # All unique, existing asset paths.
@@ -131,7 +130,7 @@ module Tension
       # configured GET routes.
       #
       def configured_route_defaults
-        if @configured_route_defaults.nil?
+        @configured_route_defaults ||= begin
           get_routes = Rails.application.routes.routes.find_all do |route|
             route.verb.match("GET")
           end
@@ -142,8 +141,6 @@ module Tension
 
           @configured_route_defaults.compact!
         end
-
-        @configured_route_defaults
       end
 
       # Returns: a real BundledAsset present in the Sprockets index, or nil
@@ -152,15 +149,6 @@ module Tension
       def valid_asset asset_path
         Rails.application.assets.find_asset( asset_path )
       end
-
-      # Returns: true if the controller targeted in the routes is present in this
-      # app's local code rather than in a gem. Gems are responsible for ensuring
-      # availability of their own assets.
-      #
-      def local_controller? controller_path
-        File.exists?("#{ Rails.root }/app/controllers/#{ controller_path }_controller.rb")
-      end
-
     end
 
   end
