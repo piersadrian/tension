@@ -1,3 +1,5 @@
+require 'active_support/concern'
+
 module Tension
 
   # Tagger is included in ActionView::Helpers so it can be called from

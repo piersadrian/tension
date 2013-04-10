@@ -1,4 +1,4 @@
-require 'active_support/ordered_options'
+# require 'active_support/ordered_options'
 
 require 'tension/environment'
 require 'tension/railtie' if defined?(Rails)
