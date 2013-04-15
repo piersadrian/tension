@@ -7,12 +7,15 @@ module Tension
     initializer "tension.add_assets_to_precompile_list" do |app|
       ActiveSupport.on_load :after_initialize do
 
-        Rails.application.reload_routes!
-        Tension.load_assets! unless Rails.env.development? or Rails.env.test?
+        if app.config.cache_classes
+          app.reload_routes!
+          Tension::Environment.eager_load!
+        end
 
-        ActionView::Base.send(:include, Tension::TensionHelper)
+        ActionView::Base.send(:include, Tension::Helper)
+        ActionController::Base.send(:include, Tension::Controller)
 
-        Rails.application.config.assets.precompile << lambda do |path, filename|
+        app.config.assets.precompile << lambda do |path, filename|
           Tension::Environment.asset_paths.include?( filename )
         end
 
