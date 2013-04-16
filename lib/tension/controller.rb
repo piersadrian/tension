@@ -12,7 +12,7 @@ module Tension
     # Returns the Context for the current controller.
     #
     def asset_context
-      find_asset( request.symbolized_path_parameters[:controller] )
+      find_asset_context( request.symbolized_path_parameters[:controller] )
     end
 
     # Returns the Sprockets Asset for the current action's JavaScript
