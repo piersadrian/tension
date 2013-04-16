@@ -1,39 +1,59 @@
 module Tension
 
-  # Tension::Environment exposes `assets`, which describes the assets that
-  # can be automatically included in templates.
-  #
-  # It's used automatically on application load (see Tension::Railtie) to populate
-  # the asset pipeline's list of assets to precompile, and caches the result in-
-  # process for use by Tension::Tagger when templates are rendered.
+  # This class describes routes and controller contexts, and through those contexts
+  # the assets to be included in templates.
   #
   class Environment
-
     class << self
 
-      def [](key, action = nil)
-        fetch( AssetGroup.path_for(key, action) )
+      # Loads a Context for the specified controller path.
+      #
+      def find(key)
+        fetch( Tension::Utils.controller_path(key) )
       end
-      alias_method :find, :[]
+      alias_method :[], :find
 
+      # A Hash mapping controller paths to Contexts.
+      #
+      def contexts
+        @contexts ||= Hash.new
+      end
+
+      # Preloads all Contexts. Useful in environments where assets and controller
+      # actions don't change without an app reboot (production, staging).
+      #
       def eager_load!
         configured_get_defaults.each do |default|
-          find( default[:controller], default[:action] )
+          find(default[:controller])
+        end
+
+        true
+      end
+
+      # Determines whether or not a given path refers to an asset that requires
+      # precompilation.
+      #
+      def precompilation_needed?(path)
+        if context = find(path)
+          context.has_action?( Tension::Utils.action_name(path) )
         end
       end
 
-      def assets
-        @assets ||= Hash.new
-      end
 
       private
 
       def fetch(path)
-        assets[path] || store(path)
+        contexts[path] || store(path)
       end
 
       def store(path)
-        assets[path] = AssetGroup.new( path )
+        contexts[path] ||= Context.new(path) if valid_route?(path)
+      end
+
+      def valid_route?(controller)
+        configured_get_defaults.find do |default|
+          default[:controller] == controller
+        end
       end
 
       # Routing defaults (including controller path and action name) for all
@@ -52,7 +72,7 @@ module Tension
           @configured_get_defaults.compact!
         end
       end
-    end
 
+    end
   end
 end

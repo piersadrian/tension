@@ -1,4 +1,5 @@
-require 'tension/asset_group'
+require 'tension/utils'
+require 'tension/context'
 require 'tension/controller'
 require 'tension/helper'
 require 'tension/environment'
