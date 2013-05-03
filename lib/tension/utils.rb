@@ -3,6 +3,7 @@ module Tension
     class << self
 
       SHARED_SUFFIX   = "_common".freeze
+      SHARED_REGEX    = /#{SHARED_SUFFIX}\..*\z/.freeze
       EXTENSION_REGEX = /(#{SHARED_SUFFIX})?\..*\z/.freeze
 
       # Matches strings like "blog/comments".
@@ -27,6 +28,13 @@ module Tension
       #
       def action_name(path)
         strip_file_extension( path.split("/").last ) if asset_path?(path)
+      end
+
+      # Determines whether an asset path is shared amongst all actions
+      # for its controller.
+      #
+      def shared_asset?(path)
+        !!path.match(SHARED_SUFFIX)
       end
 
       # Attempts to load an Asset from the Sprockets index. Uses the given
@@ -76,8 +84,8 @@ module Tension
       def controller_for_asset_path(path)
         parts = path.split("/")
 
-        if parts.last.match(SHARED_SUFFIX)
-          strip_file_extension( parts.last )
+        if shared_asset?(parts.last)
+          parts.push(strip_file_extension( parts.pop ))
         else
           parts.pop
         end
