@@ -12,21 +12,21 @@ module Tension
     # Returns the Context for the current controller.
     #
     def asset_context
-      find_asset_context( request.symbolized_path_parameters[:controller] )
+      find_asset_context( request.path_parameters['controller'] )
     end
 
     # Returns the Sprockets Asset for the current action's JavaScript
     # to be written into the template.
     #
     def action_javascript
-      asset_context.js( request.symbolized_path_parameters[:action] )
+      asset_context.js( request.path_parameters['action'] )
     end
 
     # Returns the Sprockets Asset for the current action's stylesheet
     # to be written into the template.
     #
     def action_stylesheet
-      asset_context.css( request.symbolized_path_parameters[:action] )      
+      asset_context.css( request.path_parameters['action'] )
     end
 
     # Proxy to Tension::Environment.find.

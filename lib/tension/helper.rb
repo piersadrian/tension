@@ -24,19 +24,14 @@ module Tension
     private
 
     def asset_for(type, *args)
-      controller = request.symbolized_path_parameters[:controller]
-      action     = request.symbolized_path_parameters[:action]
+      return nil if asset_context.nil?
 
-      asset = Tension::Environment.find( controller ).send( action, type )
-
-      include_method = case type.to_s
-      when "js"
-        :javascript_include_tag
-      when "css"
-        :stylesheet_link_tag
+      case type.to_sym
+      when :js
+        javascript_include_tag( action_javascript, *args )
+      when :css
+        stylesheet_link_tag( action_stylesheet, *args )
       end
-
-      send( include_method, asset.logical_path, *args )
     end
   end
 
