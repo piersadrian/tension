@@ -28,9 +28,9 @@ module Tension
 
       case type.to_sym
       when :js
-        javascript_include_tag( action_javascript, *args )
+        javascript_include_tag( action_javascript.logical_path, *args )
       when :css
-        stylesheet_link_tag( action_stylesheet, *args )
+        stylesheet_link_tag( action_stylesheet.logical_path, *args )
       end
     end
   end
