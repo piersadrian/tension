@@ -60,17 +60,9 @@ module Tension
       # configured GET routes.
       #
       def configured_get_defaults
-        @configured_get_defaults ||= begin
-          get_routes = Rails.application.routes.routes.find_all do |route|
-            route.verb.match("GET")
-          end
-
-          @configured_get_defaults = get_routes.map do |route|
-            route.defaults unless route.defaults.empty?
-          end
-
-          @configured_get_defaults.compact!
-        end
+        @configured_get_defaults ||= Rails.application.routes.routes.map do |route|
+          route.defaults if route.verb.match("GET") && !route.defaults.empty?
+        end.compact
       end
 
     end
