@@ -9,10 +9,12 @@ module Tension
       ActionView::Base.send(:include, Tension::Helper)
       ActionController::Base.send(:include, Tension::Controller)
 
+      Tension.environment = Tension::Environment.new('public/assets')
+
       Rails.application.config.assets.precompile << lambda do |path, filename|
-        Tension::Environment.precompilation_needed?(path)
+        Tension.environment.precompilation_needed?(path)
       end
     end
-    
+
   end
 end

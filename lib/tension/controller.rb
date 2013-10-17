@@ -32,7 +32,7 @@ module Tension
     # Proxy to Tension::Environment.find.
     #
     def find_asset_context(*args)
-      Tension::Environment.find(*args)
+      Tension.environment.find_context(*args)
     end
   end
 end

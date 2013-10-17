@@ -18,9 +18,6 @@ module Tension
 
         elsif matches = path.split("#").first.match(CONTROLLER_REGEX)
           return matches[0]
-
-        else
-          return nil
         end
       end
 
@@ -45,14 +42,14 @@ module Tension
       #     type: Tension::CSS
       #
       def find_asset(options)
-        assets[ logical_asset_path(options) ]
+        Tension.environment.assets[ logical_asset_path(options) ]
       end
 
       # Returns the application-wide Sprockets Asset for the given type.
       #   ARGS: type: Tension::JS or Tension::CSS
       #
       def global_asset(type)
-        assets[ "application.#{type}" ]
+        Tension.environment.assets[ "application.#{type}" ]
       end
 
       private
@@ -69,12 +66,6 @@ module Tension
         else
           "#{options[:controller]}/#{options[:action]}.#{options[:type]}"
         end
-      end
-
-      # Alias for Sprockets' asset index.
-      #
-      def assets
-        Rails.application.assets
       end
 
       # Takes an asset path like "comments/base/index.js" and determines
