@@ -8,8 +8,9 @@ module Tension
     attr_reader :assets
 
     def initialize(assets_path)
-      @manifest = Sprockets::Manifest.new(assets_path)
-      process_assets!
+      if assets_cached?
+        cache_assets_from_manifest!(Sprockets::Manifest.new(assets_path))
+      end
     end
 
     # Loads a Context for the specified controller path.
@@ -17,7 +18,18 @@ module Tension
     def find_context(key)
       fetch( Tension::Utils.controller_path(key) )
     end
-    alias_method :[], :find_context
+
+    # Returns a Sprockets::Asset for the given logical path. Will load assets
+    # cached from a manifest if available, but in development falls back to
+    # the Sprockets::Index as assets may be under development.
+    #
+    def find_asset(logical_path)
+      if assets_cached?
+        assets[logical_path]
+      else
+        Rails.application.assets.find_asset(logical_path)
+      end
+    end
 
     # A Hash mapping controller paths to Contexts.
     #
@@ -51,9 +63,13 @@ module Tension
       end
     end
 
-    def process_assets!
+    def assets_cached?
+      ! Rails.env.development? && ! Rails.application.config.assets.compile
+    end
+
+    def cache_assets_from_manifest!(manifest)
       @assets = Hash.new
-      @manifest.files.each do |full_path, info|
+      manifest.files.each do |full_path, info|
         next unless full_path.match(/\.css|\.js\z/)
 
         info = info.merge(full_path: full_path).with_indifferent_access

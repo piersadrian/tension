@@ -42,14 +42,14 @@ module Tension
       #     type: Tension::CSS
       #
       def find_asset(options)
-        Tension.environment.assets[ logical_asset_path(options) ]
+        Tension.environment.find_asset( logical_asset_path(options) )
       end
 
       # Returns the application-wide Sprockets Asset for the given type.
       #   ARGS: type: Tension::JS or Tension::CSS
       #
       def global_asset(type)
-        Tension.environment.assets[ "application.#{type}" ]
+        Tension.environment.find_asset( "application.#{type}" )
       end
 
       private
