@@ -7,30 +7,52 @@ module Tension
   module Helper
     extend ActiveSupport::Concern
 
-    # Determines the best stylesheet to be included in a template based
+    # Determines the best stylesheets to be included in a template based
     # on the current controller and action.
     #
-    def best_stylesheet(*args)
-      asset_for( Tension::CSS, *args )
+    def best_stylesheets(*args)
+      build_tags( Tension::CSS, *args )
     end
 
-    # Determines the best JavaScript to be included in a template based
+    # Determines the best JavaScripts to be included in a template based
     # on the current controller and action.
     #
-    def best_javascript(*args)
-      asset_for( Tension::JS, *args )
+    def best_javascripts(*args)
+      build_tags( Tension::JS, *args )
     end
 
     private
 
-    def asset_for(type, *args)
+    def build_tags(type, *args)
+      options = args.extract_options!
+      shared_path = options.delete(:shared) || asset_context.shared_assets[type].presence
+
+      html = asset_for( type, "application", *args, options )
+
+      if shared_path
+        html << asset_for( type, shared_path, *args )
+      end
+
+      # action_asset = case type
+      #   when Tension::CSS
+      #     action_stylesheet
+      #   when Tension::JS
+      #     action_javascript
+      # end
+
+      # html << asset_for( type, action_asset.logical_path, *args, options )
+
+      html.html_safe
+    end
+
+    def asset_for(type, path, *args)
       return nil if asset_context.nil?
 
-      case type.to_sym
-      when :js
-        javascript_include_tag( action_javascript.logical_path, *args )
-      when :css
-        stylesheet_link_tag( action_stylesheet.logical_path, *args )
+      case type
+        when Tension::CSS
+          stylesheet_link_tag( path, *args )
+        when Tension::JS
+          javascript_include_tag( path, *args )
       end
     end
   end

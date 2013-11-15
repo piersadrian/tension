@@ -1,9 +1,13 @@
 module Tension
   class Context
-    attr_reader :controller, :action
+    attr_reader :controller_name, :action
 
     def initialize(controller_path)
-      @controller = "#{ controller_path }_controller".classify.constantize
+      @controller_name = "#{ controller_path }_controller".classify
+    end
+
+    def controller
+      controller_name.constantize
     end
 
     # Locates the best stylesheet for the given action name. Aliased as,
@@ -43,13 +47,17 @@ module Tension
       controller.action_methods.include?(action_name)
     end
 
+    def shared_assets
+      controller._tension_assets
+    end
+
 
     private
 
     # Locates the best asset for the given action name and type.
     #
     def best_asset(action, type)
-      action_asset(action, type) || controller_asset(type) || global_asset(type)
+      action_asset(action, type) || controller_asset(type)
     end
 
     def method_missing(method_sym, *args)
