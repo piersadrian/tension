@@ -7,16 +7,15 @@ module Tension
     included do
       # Make these methods available in helpers too.
       helper_method :asset_context, :action_javascript, :action_stylesheet
-
-      class_attribute :_tension_assets, instance_accessor: false
-      self._tension_assets = {}
     end
 
 
     module ClassMethods
       def include_assets(options)
-        self._tension_assets[ Tension::CSS ] = options[:css]
-        self._tension_assets[ Tension::JS ]  = options[:js]
+        Tension.environment.controllers[ self.name.underscore ] = {
+          Tension::CSS => options[:css],
+          Tension::JS  => options[:js]
+        }
       end
     end
 

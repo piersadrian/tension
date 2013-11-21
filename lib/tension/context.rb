@@ -48,7 +48,16 @@ module Tension
     end
 
     def shared_assets
-      controller._tension_assets
+      klass = controller
+
+      while true
+        break {} if klass == ActionController::Base
+
+        assets = Tension.environment.controllers[ klass.name.underscore ]
+        break assets if assets.present?
+
+        klass = klass.superclass
+      end
     end
 
 

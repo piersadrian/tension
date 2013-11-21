@@ -5,7 +5,7 @@ module Tension
   #
   class Environment
 
-    attr_reader :assets
+    attr_reader :assets, :controllers
 
     def initialize(assets_path)
       if assets_cached?
@@ -35,6 +35,10 @@ module Tension
     #
     def contexts
       @contexts ||= Hash.new
+    end
+
+    def controllers
+      @controllers ||= Hash.new
     end
 
     # Determines whether or not a given path refers to an asset that requires
