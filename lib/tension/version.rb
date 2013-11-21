@@ -1,3 +1,3 @@
 module Tension
-  VERSION = "0.9.16.pre".freeze
+  VERSION = "0.10.0".freeze
 end
