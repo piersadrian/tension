@@ -52,6 +52,10 @@ module Tension
         Tension.environment.find_asset( "application.#{type}" )
       end
 
+      def strip_file_extension(path)
+        path.gsub(EXTENSION_REGEX, "")
+      end
+
       private
 
       # Builds a String path for an asset based on the given hash params.
@@ -82,10 +86,6 @@ module Tension
         end
 
         return parts.any? ? parts.join("/") : nil
-      end
-
-      def strip_file_extension(path)
-        path.gsub(EXTENSION_REGEX, "")
       end
 
       # Returns whether or not the given path represents an asset file

@@ -3,7 +3,11 @@ module Tension
     attr_reader :controller_name, :action
 
     def initialize(controller_path)
-      @controller_name = "#{ controller_path }_controller".classify
+      @controller_name = controller_path.camelize
+
+      unless @controller_name.safe_constantize
+        @controller_name << "Controller"
+      end
     end
 
     def controller

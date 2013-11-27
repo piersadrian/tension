@@ -7,12 +7,6 @@ module Tension
 
     attr_reader :assets, :controllers
 
-    def initialize(assets_path)
-      if assets_cached?
-        cache_assets_from_manifest!(Sprockets::Manifest.new(assets_path))
-      end
-    end
-
     # Loads a Context for the specified controller path.
     #
     def find_context(key)
@@ -41,20 +35,11 @@ module Tension
       @controllers ||= Hash.new
     end
 
-    # Determines whether or not a given path refers to an asset that requires
-    # precompilation.
-    #
-    def precompilation_needed?(path)
-      if cxt = find_context(path)
-        Tension::Utils.shared_asset?(path) || cxt.has_action?( Tension::Utils.action_name(path) )
-      end
-    end
-
 
     private
 
     def fetch(path)
-      contexts[path] || store(path) unless path.nil?
+      (contexts[path] || store(path)) if path.present?
     end
 
     def store(path)
@@ -64,20 +49,6 @@ module Tension
     def valid_route?(controller)
       configured_get_defaults.find do |default|
         default[:controller] == controller
-      end
-    end
-
-    def assets_cached?
-      ! Rails.env.development? && ! Rails.application.config.assets.compile
-    end
-
-    def cache_assets_from_manifest!(manifest)
-      @assets = Hash.new
-      manifest.files.each do |full_path, info|
-        next unless full_path.match(/\.css|\.js\z/)
-
-        info = info.merge(full_path: full_path).with_indifferent_access
-        @assets[ info[:logical_path] ] = Asset.new(info)
       end
     end
 
